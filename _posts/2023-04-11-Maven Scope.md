@@ -1,7 +1,7 @@
----
 title: "Introduction of Maven scope"
-date: 2023-04-11
----
+date: 2023-04-11 
+categories: maven,java
+
 
 Dependency scope is used to limit the transitivity of a dependency and to determine when a dependency is included in a classpath.
 
