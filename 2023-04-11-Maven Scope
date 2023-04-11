@@ -1,0 +1,73 @@
+---
+title: "Introduction of Maven scope"
+date: 2023-04-11
+---
+
+Dependency scope is used to limit the transitivity of a dependency and to determine when a dependency is included in a classpath.
+
+### Compile
+This is the default scope when no other scope is provided. Dependencies with this scope is available on the classpath of the project in all build tasks.
+
+### Provided
+We use this scope to mark dependencies that should be provided at runtime by JDK or a container.
+
+### Runtime
+The dependencies with this scope will be present in the runtime and test classpath, but not present in the compilation classpath. A JDBC driver is a good example of dependencies that should use the runtime scope.
+
+### Test
+Test dependencies aren't transitive and only present for test and execution classpaths.
+
+### System
+System scope is very similar to the provided scope. The main difference is that system requires us to directly point to a specific jar on the system.
+
+### Import
+This scope is only supported on a dependency of type pom in the <dependencyManagement> section. It indicates the dependency is to be replaced with the effective list of dependencies in the specified POM's <dependencyManagement> section. Since they are replaced, dependencies with a scope of import do not actually participate in limiting the transitivity of a dependency.
+
+// project B:
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>project-A</groupId>
+        <artifactId>project-A</artifactId>
+        <version>1.0</version>
+        <scope>import</scope>
+      </dependency>
+      ...
+    </dependencies>
+  </dependencyManagement>
+  
+In above example, project-A's dependencyManagement will be copied into project-B's pom. If you want to override one of dependency of project-A in project B's pom, the dependency should be defined before project A.
+  // project B:
+  <dependencyManagement>
+    <dependencies>
+      <!-- 注意写到对项目A依赖的前面 -->
+      <dependency>
+        <groupId>some</groupId>
+        <artifactId>some</artifactId>
+        <version>1.0</version>
+      </dependency>
+ 
+      <dependency>
+        <groupId>project-A</groupId>
+        <artifactId>project-A</artifactId>
+        <version>1.0</version>
+        <scope>import</scope>
+      </dependency>
+      ...
+    </dependencies>
+  </dependencyManagement>
+  
+When you don't like inheriting from the spring-boot-starter-parent, you can still benifit of dependency management by using a scope=import dependency, as follows:
+
+<dependencyManagement>
+    <dependencies> 
+        <dependency>
+            <!-- Import dependency management from Spring Boot -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.1.12.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
